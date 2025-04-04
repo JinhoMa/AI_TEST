@@ -1,0 +1,204 @@
+﻿
+<!-- (주석)
+  <command>
+    name		: 패킷 이름
+    opCode		: 명령어 코드
+    monitoring		: 모니터링 명령어 여부 (true = 모니터링 패킷, false = 일반 패킷)
+    monElapse		: 모니터링 주기 (ms 단위, monitoring 속성이 true일때만 유효)
+
+  <segment> 속성
+    name		: 이름
+    valueType 		: 값의 타입 (UINT8, UINT16, UINT32, UINT64, INT8, INT16, INT32, INT64, FLOAT, DOUBLE) 중 한가지
+    arrayCount          : 배열 갯수, 즉 이 값과 동일한 값이 계속 연결되어서 지정된 갯수만큼 반복된다. 1 = 한번, 2 ~ = 두개 이상
+    uint    		: 값의 단위
+    normalRangeMin	: 정상범위 최소값
+    normalRangeMax	: 정상범위 최대값
+    description		: 부연 설명
+
+  <value> 속성
+    value		: 할당된 값
+    represent		: 할당된 값의 의미 ( 위의 예에서 0x01 값이 할당되었다면 그것은 'Success' 라는 의미 )
+
+  <segment_bit> 속성
+    name		: 이름
+    byteCount 		: 바이트수 (1 ~ 32 바이트, 1바이트당 8비트씩)
+    description		: 부연 설명
+
+  <bit> 속성
+    index		: 비트의 인덱스, <segment_bit> 태그에서 byteCount="2"로 설정되었다면 <bit> 태그의 index는 0 ~ 15까지 할당된다.
+    name                : 비트의 이름
+    value_0		: 비트가 0일때 값의 의미
+    value_1		: 비트가 1일때 값의 의미
+
+ -->
+
+
+<skiProtocol>
+  <configuration>
+    <!-- <command> 태그 단위로 구성 -->
+    <command name= "Model Name"         address="00"  dataLength="16" defaultValue ="P100"    dataType="STRING" description="RACKBMS 모델 Name, MESA String 모델 이름과 동일" />
+    <command name= "Model Version"      address="16"  dataLength="8"  defaultValue ="1P8S" dataType="STRING" description="RACKBMS 버전, MESA String 모델의 Version과 동일" />
+    <command name= "Serial Number"      address="24"  dataLength="8"  defaultValue ="00001"     dataType="STRING" description="RBMS 시리얼 번호, WRITE 방법 고민 중(TBD)" />
+    <command name= "RackBMS ID"         address="32"  dataLength="1"  defaultValue ="1"       dataType="UInt8" description="RBMS 국번 ( 1부터 ~ N), 스위치 셋팅을 읽어서 WRITE 한다." />
+    <command name= "Tray Model Name"    address="33"  dataLength="16" defaultValue ="1P8S"    dataType="STRING" description="Tray Model Name" />
+    <command name= "Tray Model Version" address="49"  dataLength="8"  defaultValue ="24-11"       dataType="STRING" description="Tray Model Version" />
+    <command name= "Tray Count"         address="57"  dataLength="1"  defaultValue ="1"       dataType="UInt8" description="TrayBMS 개수" />
+    <command name= "Tray Cell Count"    address="58"  dataLength="1"  defaultValue ="8"      dataType="UInt8" description="TrayBMS 내에 Cell 개수" />
+    <command name= "Tray BMIC Count"    address="59"  dataLength="1"  defaultValue ="1"       dataType="UInt8" description="TrayBMS 내에 BMIC 개수" />
+    <command name= "Tray Module Temp Cnt" address="60"  dataLength="1"  defaultValue ="3"       dataType="UInt8" description="Tray Module 내에 온도 센싱 개수" />
+    <command name= "Tray Board Temp Cnt" address="61"  dataLength="1"  defaultValue ="2"       dataType="UInt8" description="TrayBMS 내에 보드 온도센싱 개수" />
+    <command name= "Bmic Cell Ena Count" address="62"  dataLength="1"  defaultValue ="10"       dataType="UInt8" description="BMIC 센싱 하는 Cell 의 Enable Count" />
+    <command name= "BMIC Cell Mask0"    address="63"  dataLength="2"  defaultValue ="0xFF"       dataType="UINT16" description="BMIC 당 Cell 센싱 Mask1" />
+    <command name= "BMIC Cell Mask1"    address="65"  dataLength="2"  defaultValue ="0"       dataType="UINT16" description="BMIC 당 Cell 센싱 Mask2" />
+    <command name= "BMIC Cell Mask2"    address="67"  dataLength="2"  defaultValue ="0"       dataType="UINT16" description="BMIC 당 Cell 센싱 Mask3" />
+    <command name= "BMIC Cell Mask3"    address="69"  dataLength="2"  defaultValue ="0"       dataType="UINT16" description="BMIC 당 Cell 센싱 Mask4" />
+    <command name= "PAD"                address="71"  dataLength="8"  defaultValue =""       dataType="STRING" description="Reserved Space" />
+    <command name= "BMIC AuxUse1"       address="79"  dataLength="4"  defaultValue ="0x54000000"       dataType="UINT32" description="BMIC Aux0 사용 정보" />
+    <command name= "BMIC AuxUse1"       address="83"  dataLength="1"  defaultValue ="0"       dataType="UINT32" description="BMIC Aux1 사용 정보" />
+    <command name= "BMIC AuxUse2"       address="87"  dataLength="1"  defaultValue ="0"       dataType="UINT32" description="BMIC Aux2 사용 정보" />
+    <command name= "BUILD Major Ver"    address="91"  dataLength="1"  defaultValue ="0x01"        dataType="UInt8"  description="SW BUild Major Minor Version " />	
+    <command name= "BUILD Minor Ver"    address="92"  dataLength="1"  defaultValue ="0x10"        dataType="UInt8"  description="SW BUild Minor2 Version" />	
+    <command name= "BUILD Year"         address="93"  dataLength="1"  defaultValue =""        dataType="UInt8"  description="SW BUild Year" />	
+    <command name= "BUILD Month"        address="94"  dataLength="1"  defaultValue =""        dataType="UInt8"  description="SW BUild Month" />	
+    <command name= "BUILD Day"          address="95"  dataLength="1"  defaultValue =""        dataType="UInt8"  description="SW BUild Day" />	
+    <command name= "NIP1"               address="96"  dataLength="1"  defaultValue =""     dataType="UInt8"  description="Network IP 1st" />
+    <command name= "NIP1"               address="97"  dataLength="1"  defaultValue =""     dataType="UInt8"  description="Network IP 2nd" />
+    <command name= "NIP1"               address="98"  dataLength="1"  defaultValue =""     dataType="UInt8"  description="Network IP 3rd" />
+    <command name= "NIP1"               address="99"  dataLength="1"  defaultValue =""     dataType="UInt8"  description="Network IP 4th" />
+    <command name= "GWIP4"              address="100"  dataLength="1"  defaultValue =""     dataType="UInt8"  description="Master IP 4th" />
+    <command name= "PAD"               address="101"  dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="Deprecated" />	
+    <command name= "OCVF"               address="103"  dataLength="2"  defaultValue ="3500"    dataType="UINT16" description="Over Cell Fault Value" />
+    <command name= "OCVW"               address="105"  dataLength="2"  defaultValue ="3400"    dataType="UINT16" description="Over Cell Warning Value" />
+    <command name= "UCVF"               address="107"  dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="Deprecated" />	
+    <command name= "UCVF"               address="109"  dataLength="2"  defaultValue ="2800"    dataType="UINT16" description="Under Cell Fault Value" />
+    <command name= "UCVW"               address="111"  dataLength="2"  defaultValue ="2900"    dataType="UINT16" description="Under Cell Warning Value" />
+    <command name= "CVDF"                address="113"  dataLength="2"  defaultValue ="600"     dataType="UINT16" description="Cell Voltage Deviation Fault Value" />
+    <command name= "CVDW"                address="115"  dataLength="2"  defaultValue ="300"    dataType="INT16"  description="Cell Voltage Deviation WARNING Value" />
+    <command name= "OTF"                address="117"  dataLength="2"  defaultValue ="5800"    dataType="INT16"  description="Over temp Fault" />
+    <command name= "OTW"                address="119"  dataLength="2"  defaultValue ="5300"    dataType="INT16"  description="Over temp warning" />
+    <command name= "UTF"                address="121"  dataLength="2"  defaultValue ="500"    dataType="INT16"  description="Under temp Fault" />
+    <command name= "UTW"                address="123"  dataLength="2"  defaultValue ="1000"    dataType="INT16"  description="Under temp warning" />
+    <command name= "OSOCF"              address="125"  dataLength="2"  defaultValue ="10000"    dataType="UINT16" description="Over SOC Fault" />
+    <command name= "OSOCW"              address="127"  dataLength="2"  defaultValue ="10000"    dataType="UINT16" description="Over SOC warning" />
+    <command name= "USOCF"              address="129"  dataLength="2"  defaultValue ="0"       dataType="UINT16" description="Under SOC Fault" />
+    <command name= "USOCW"              address="131"  dataLength="2"  defaultValue ="0"     dataType="UINT16" description="Under SOC warning" />
+    <command name= "PAD"               address="133" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="Deprecated" />
+    <command name= "OBVF"               address="135" dataLength="2"  defaultValue ="288"    dataType="UINT16" description="Over Battery Volt Fault" />
+    <command name= "OBVW"               address="137" dataLength="2"  defaultValue ="276"    dataType="UINT16" description="Over Battery Volt Warning" />
+    <command name= "PAD"               address="139" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="Deprecated" />
+    <command name= "UBVF"               address="141" dataLength="2"  defaultValue ="208"    dataType="UINT16" description="Under Battery Volt Fault" />
+    <command name= "UBVW"               address="143" dataLength="2"  defaultValue ="228"    dataType="UINT16" description="Under Battery Volt Warning" />
+    <command name= "PAD"               address="145" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="Deprecated" />
+    <command name= "OCCF"               address="147" dataLength="2"  defaultValue ="10000"    dataType="INT16"  description="Over Charge Current Fault" />
+    <command name= "OCCW"               address="149" dataLength="2"  defaultValue ="09000"    dataType="INT16"  description="Over Charge Current Warning" />
+    <command name= "PAD"               address="151" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="Deprecated" />
+    <command name= "ODCF"               address="153" dataLength="2"  defaultValue ="-20000"   dataType="INT16"  description="Over Discharge Current Fault" />
+    <command name= "ODCW"               address="155" dataLength="2"  defaultValue ="-18000"   dataType="INT16"  description="Over Discharge Current Warning" />
+    <command name= "PAD"               address="157" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="Deprecated" />
+    <command name= "PAD"               address="159" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="Deprecated" />
+    <command name= "TDF"                address="161" dataLength="2"  defaultValue ="1500"      dataType="INT16"  description="Module Temp Deviation Fault" />
+    <command name= "TDW"                address="163" dataLength="2"  defaultValue ="1000"      dataType="INT16"  description="Module Temp Deviation Warning" />
+    <command name= "PAD"               address="165" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="Deprecated" />
+    <command name= "COM CHKSUM"        address="167" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="EEPROM CheckSum Value LSB MSB" />		
+    <command name= "DTC"               address="169" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="DTC Number" />
+    <command name= "DTCSUB"               address="171" dataLength="2"  defaultValue ="0xFFFF"    dataType="UINT16" description="DTC Sub Code" />	
+    <command name= "BREFV1"               address="300" dataLength="2"  defaultValue ="16"    dataType="UINT16"  description="Reference BatteryVOL #1" />
+    <command name= "BREFV2"               address="302" dataLength="2"  defaultValue ="32"    dataType="UINT16"  description="Reference BatteryVOL #2" />
+    <command name= "BREFV3"               address="304" dataLength="2"  defaultValue ="0"    dataType="UINT16"  description="Reference BatteryVOL #3" />
+    <command name= "BVC1"                address="306" dataLength="2"  defaultValue ="7937"          dataType="UINT16"  description="BatVol Correction #1" />
+    <command name= "BVC2"                address="308" dataLength="2"  defaultValue ="15900"          dataType="UINT16"  description="BatVol Correction #2" />
+    <command name= "BVC3"               address="310" dataLength="2"  defaultValue ="0"    dataType="UINT16"  description="BatVol Correction #2" />
+    <command name= "PREFV1"               address="312" dataLength="2"  defaultValue ="16"    dataType="UINT16"  description="Reference PcsVol #1" />
+    <command name= "PREFV2"               address="314" dataLength="2"  defaultValue ="32"    dataType="UINT16"  description="Reference PcsVol #2" />
+    <command name= "PREFV3"                address="316" dataLength="2"  defaultValue ="0"          dataType="UINT16"  description="Reference PcsVol #3" />
+    <command name= "PVC1"                address="318" dataLength="2"  defaultValue ="7937"          dataType="UINT16"  description="PcsVOl Correction #1" />
+    <command name= "PVC2"                address="320" dataLength="2"  defaultValue ="15900"          dataType="UINT16"  description="PcsVOl Correction #2" />
+    <command name= "PVC3"                address="322" dataLength="2"  defaultValue ="0"          dataType="UINT16"  description="PcsVOl Correction #3" />
+    <command name= "REFC1"                address="324" dataLength="2"  defaultValue ="0"          dataType="UINT16"  description="Reference Cur Value #1" />
+    <command name= "REFC2"                address="326" dataLength="2"  defaultValue ="3"          dataType="UINT16"  description="Reference Cur Value #2" />
+    <command name= "REFC3"                address="328" dataLength="2"  defaultValue ="0"          dataType="UINT16"  description="Reference Cur Value #3" />
+    <command name= "CC1"                address="330" dataLength="4"  defaultValue ="130957"   dataType="UINT32"  description="Charge Current Correction #1" />
+    <command name= "CC2"                address="334" dataLength="4"  defaultValue ="129539"   dataType="UINT32"  description="Charge Current Correction #2" />
+    <command name= "CC3"                address="338" dataLength="4"  defaultValue ="0"   dataType="UINT32"  description="Charge Current Correction #3" />
+    <command name= "DC1"                address="342" dataLength="4"  defaultValue ="130971"          dataType="UINT32"  description="Discharge Current Correction #1" />
+    <command name= "DC2"                address="346" dataLength="4"  defaultValue ="132387"          dataType="UINT32"  description="Discharge Current Correction #2" />
+    <command name= "DC3"                address="350" dataLength="4"  defaultValue ="0"   dataType="UINT32"  description="Discharge Current Correction #3" />
+    <command name= "LVREF"              address="366" dataLength="2"  defaultValue ="2000"   dataType="UINT16"  description="Calibration Reference Cell Low Voltage" />
+    <command name= "HVREF"              address="368" dataLength="2"  defaultValue ="4000"   dataType="UINT16"  description="Calibration Reference Cell High Voltage" />
+    <command name= "LV[0]"              address="370" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration LO Cell Voltage#1" />
+    <command name= "LV[1]"              address="372" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration LO Cell Voltage#2" />
+    <command name= "LV[2]"              address="374" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration LO Cell Voltage#3" />
+    <command name= "LV[3]"              address="376" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration LO Cell Voltage#4" />
+    <command name= "LV[4]"              address="378" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration LO Cell Voltage#5" />
+    <command name= "LV[5]"              address="380" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration LO Cell Voltage#6" />
+    <command name= "LV[6]"              address="382" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration LO Cell Voltage#7" />
+    <command name= "LV[7]"              address="384" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration LO Cell Voltage#8" />
+    <command name= "HV[0]"              address="390" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration HI Cell Voltage#1" />
+    <command name= "HV[1]"              address="392" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration HI Cell Voltage#2" />
+    <command name= "HV[2]"              address="394" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration HI Cell Voltage#3" />
+    <command name= "HV[3]"              address="396" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration HI Cell Voltage#4" />
+    <command name= "HV[4]"              address="398" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration HI Cell Voltage#5" />
+    <command name= "HV[5]"              address="400" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration HI Cell Voltage#6" />
+    <command name= "HV[6]"              address="402" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration HI Cell Voltage#7" />
+    <command name= "HV[7]"              address="404" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration HI Cell Voltage#8" />
+    <command name= "CALCHKSUM"          address="450" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Calibration CHECK SUM" />
+    <command name= "SOC5P"              address="500" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master SOC 5P" />
+    <command name= "DCHGSCV"            address="502" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master Discharge Stop CellVoltage" />
+    <command name= "CWCV"               address="504" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master Charge Wait Voltage" />
+    <command name= "PDWNCV"             address="506" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master PowerDown Cell Voltage" />
+    <command name= "FCCV"               address="508" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master Full Charge Cell Voltage" />
+    <command name= "FCCTV"              address="510" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master Full Charge Release Tapper Voltage" />
+    <command name= "FCWJCV"             address="512" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master Full Charge Warning Judgement Cell V" />
+    <command name= "FCJC"               address="514" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master Full Charge Judgement Current" />
+    <command name= "DCHGJC"             address="516" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master DisCharge Jdugement Current" />
+    <command name= "CHGJC"              address="518" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Master DisCharge Jdugement Current" />
+
+    <command name= "SCO0"               address="550" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 0" />
+    <command name= "SCO5"               address="552" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 5" />
+    <command name= "SCO10"              address="554" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 10" />
+    <command name= "SCO15"              address="556" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 15" />
+    <command name= "SCO20"              address="558" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 20" />
+    <command name= "SCO25"              address="560" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 25" />
+    <command name= "SCO30"              address="562" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 30" />
+    <command name= "SCO35"              address="564" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 35" />
+    <command name= "SCO40"              address="566" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 40" />
+    <command name= "SCO45"              address="568" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 45" />
+    <command name= "SCO50"              address="570" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 50" />
+    <command name= "SCO55"              address="572" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 55" />
+    <command name= "SCO60"              address="574" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 60" />
+    <command name= "SCO65"              address="576" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 65" />
+    <command name= "SCO70"              address="578" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 70" />
+    <command name= "SCO75"              address="580" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 75" />
+    <command name= "SCO80"              address="582" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 80" />
+    <command name= "SCO85"              address="584" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 85" />
+    <command name= "SCO90"              address="586" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 90" />
+    <command name= "SCO95"              address="588" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 95" />
+    <command name= "SCO100"             address="590" dataLength="2"  defaultValue =""   dataType="UINT16"  description="SOC 100" />
+    <command name= "CELLCAP"            address="592" dataLength="2"  defaultValue =""   dataType="UINT16"  description="Cell Capacpatiy Ah" />
+    <command name= "TOTRC"              address="594" dataLength="4"  defaultValue =""   dataType="UINT32"  description="Total Remain Cap (100mA*sec)" />
+    <command name= "ENERGY"             address="598" dataLength="4"  defaultValue =""   dataType="UINT32"  description="Energy (100w)" />
+	
+	
+ </configuration>
+  <cellMonitoring startAddress="200" addressGab="200" trayCount="14" >
+    <command name= "Cell 1 Over Voltage Count" address="0" dataLength="2" dataType="UINT16" description="Cell1번의 OverVoltage Count" />
+    <command name= "Cell 2 Over Voltage Count" address="2" dataLength="2" dataType="UINT16" description="Cell2번의 OverVoltage Count" />
+    <command name= "Cell 3 Over Voltage Count" address="4" dataLength="2" dataType="UINT16" description="Cell3번의 OverVoltage Count" />
+    <command name= "Cell 4 Over Voltage Count" address="6" dataLength="2" dataType="UINT16" description="Cell4번의 OverVoltage Count" />
+    <command name= "Cell 5 Over Voltage Count" address="8" dataLength="2" dataType="UINT16" description="Cell5번의 OverVoltage Count" />
+    <command name= "Cell 6 Over Voltage Count" address="10" dataLength="2" dataType="UINT16" description="Cell6번의 OverVoltage Count" />
+    <command name= "Cell 7 Over Voltage Count" address="12" dataLength="2" dataType="UINT16" description="Cell7번의 OverVoltage Count" />
+    <command name= "Cell 8 Over Voltage Count" address="14" dataLength="2" dataType="UINT16" description="Cell8번의 OverVoltage Count" />
+    <command name= "Cell 9 Over Voltage Count" address="16" dataLength="2" dataType="UINT16" description="Cell9번의 OverVoltage Count" />
+    <command name= "Cell 10 Over Voltage Count" address="18" dataLength="2" dataType="UINT16" description="Cell10번의 OverVoltage Count" />
+    <command name= "Cell 11 Over Voltage Count" address="20" dataLength="2" dataType="UINT16" description="Cell11번의 OverVoltage Count" />
+    <command name= "Cell 12 Over Voltage Count" address="22" dataLength="2" dataType="UINT16" description="Cell12번의 OverVoltage Count" />
+    <command name= "Cell 13 Over Voltage Count" address="24" dataLength="2" dataType="UINT16" description="Cell13번의 OverVoltage Count" />
+    <command name= "Cell 14 Over Voltage Count" address="26" dataLength="2" dataType="UINT16" description="Cell14번의 OverVoltage Count" />
+    <command name= "Cell 15 Over Voltage Count" address="28" dataLength="2" dataType="UINT16" description="Cell15번의 OverVoltage Count" />
+    <command name= "Module 1 Over Temperature Count" address="128" dataLength="2" dataType="INT16" description="모듈1의 팩내 Over Termperature 회수" />
+    <command name= "Module 1 Under Temperature Count" address="130" dataLength="2" dataType="INT16" description="모듈1의 팩내 Under Termperature 회수" />
+    <command name= "Module 2 Over Temperature Count" address="132" dataLength="2" dataType="INT16" description="모듈2의 팩내 Over Termperature 회수" />
+    <command name= "Module 2 Under Temperature Count" address="134" dataLength="2" dataType="INT16" description="모듈2의 팩내 Under Termperature 회수" />
+  </cellMonitoring>
+</skiProtocol>

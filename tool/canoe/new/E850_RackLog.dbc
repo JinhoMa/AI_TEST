@@ -1,0 +1,389 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: ecu2
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ MaxVol_num : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ relay_on : 0|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Ncoil_Cur : 0|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Pcoil_Cur : 0|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Rtc_sec : 0|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ Rtc_min : 0|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ Rtc_hr : 0|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ Rtc_day : 0|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ Rtc_mon : 0|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ Rtc_year : 0|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ Evt2_sig : 0|32@0- (1,0) [0|0] "" Vector__XXX
+ SG_ alarm : 0|32@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ submic2_reset_count : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ submic1_reset_count : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ SOH_CoutTime : 0|32@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ EEP_SOH : 0|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ SOH_DY : 0|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ SOH_MN : 0|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ SOH_YR : 0|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ SOH : 0|16@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 0 New_Message_15: 8 Vector__XXX
+ SG_ New_Signal_91 : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1271 Master: 4 Vector__XXX
+ SG_ chg_energy : 23|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ total_energy : 7|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 1270 R_StringModel1: 8 Vector__XXX
+ SG_ sig_fuse_test_on : 40|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ sig_heat_fet : 32|8@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ sig_dfet : 24|8@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ sig_cfet : 16|8@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ r_stringmodel_conena : 8|8@1+ (1,0) [0|2] "" Vector__XXX
+ SG_ r_stringmodel_setena : 0|8@1+ (1,0) [0|2] "" Vector__XXX
+
+BO_ 1269 VendorAlarm: 8 Vector__XXX
+ SG_ alarm_ucvp_w : 27|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_ucvp_f : 26|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_ocvp_w : 25|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_ocvp_f : 24|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 1268 TrayTemp: 8 Vector__XXX
+ SG_ MinTemp_num : 56|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MinTemp_tray : 48|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MinTemp : 39|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ MaxTemp_num : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MaxTemp_tray : 16|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MaxTemp : 7|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 1267 CellVol: 8 Vector__XXX
+ SG_ MinVol_num : 56|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MinVol_tray : 48|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MinVol : 39|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ MaxVol_num : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MaxVol_tray : 16|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MaxVol : 7|16@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2032 response: 8 Vector__XXX
+ SG_ R7 : 63|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ R6 : 55|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ R5 : 47|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ R4 : 39|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ R3 : 31|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ R2 : 23|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ R1 : 15|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ R0 : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 2031 request: 8 Vector__XXX
+ SG_ D7 : 63|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ D6 : 55|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ D5 : 47|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ D4 : 39|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ D3 : 31|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ D2 : 23|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ D1 : 15|8@0+ (1,0) [0|255] "" Vector__XXX
+ SG_ D0 : 7|8@0+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1266 GFD: 8 Vector__XXX
+ SG_ N_GFD_R : 39|32@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ P_GFD_R : 7|32@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 1265 RACK2: 8 Vector__XXX
+ SG_ alarm_usoc_w : 22|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_usoc_f : 21|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_temp_imb_w : 11|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_temp_imb_f : 10|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_other_w : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_other_f : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_osoc_w : 8|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_osoc_f : 23|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_open_door : 15|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_gfd_f : 14|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_fan_f : 13|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_contact_f : 12|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_celldev_w : 9|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_uvp_w : 20|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_uvp_f : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_utp_w : 28|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_utp_f : 27|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_ovp_w : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_ovp_f : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_otp_w : 26|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_otp_f : 25|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_odcp_w : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_odcp_f : 31|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_ocp_w : 30|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_ocp_f : 29|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ alarm_com_err : 24|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ ext_temperature : 55|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ SOC : 39|16@0+ (0.1,0) [0|0] ""  ecu2
+
+BO_ 1264 RACK: 8 Vector__XXX
+ SG_ Current : 55|16@0- (0.01,0) [-2000|2000] ""  ecu2
+ SG_ SW_VOL : 7|16@0+ (0.01,0) [0|65536] "" Vector__XXX
+ SG_ PACK_VOL : 39|16@0+ (0.01,0) [0|65536] ""  ecu2
+ SG_ HW_VOL : 23|16@0+ (0.1,0) [0|65536] "" Vector__XXX
+
+
+
+EV_ Var_CurSimul: 0 [0|0] "" 0 1 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDischargeCurMidRef: 0 [0|0] "" 0 2 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalChargeCurMidRef: 0 [0|0] "" 0 3 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVolMidRef: 0 [0|0] "" 0 4 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVolSetPointMid: 0 [0|0] "" 0 5 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalChargeCurSetMid: 0 [0|0] "" 0 6 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDischargeCurMid: 0 [0|0] "" 0 7 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVolSetLow: 0 [0|0] "" 0 8 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDischargeCurLow: 0 [0|0] "" 0 9 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalChargeCurSetLow: 0 [0|0] "" 0 10 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_UBATV: 0 [0|0] "" 0 11 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_Others: 0 [0|0] "" 0 12 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ SwVol: 0 [0|0] "" 0 13 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdNRead: 0 [0|0] "" 0 14 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdPRead: 0 [0|0] "" 0 15 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDischargeCurRead: 0 [0|0] "" 0 16 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalChargeCurRead: 0 [0|0] "" 0 17 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalPcsVolRead: 0 [0|0] "" 0 18 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVolRead: 0 [0|0] "" 0 19 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ BPUTEMP_DATA: 1 [0|0] "" 0 20 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ BPUTEMP_READ: 0 [0|0] "" 0 21 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RTCString: 0 [0|0] "" 0 22 DUMMY_NODE_VECTOR8000 Vector__XXX;
+
+EV_ RTC_READ: 0 [0|0] "" 0 23 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ LNKLED_OFF: 0 [0|0] "" 0 24 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ LNKLED_ON: 0 [0|0] "" 0 25 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ FLTLED_OFF: 0 [0|0] "" 0 26 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ FLTLED_ON: 0 [0|0] "" 0 27 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ PWRLED_OFF: 0 [0|0] "" 0 28 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ PWRLED_ON: 0 [0|0] "" 0 29 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ FANOUT_OFF: 0 [0|0] "" 0 30 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ FANOUT_ON: 0 [0|0] "" 0 31 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RELAY_N_OFF: 0 [0|0] "" 0 32 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RELAY_N_ON: 0 [0|0] "" 0 33 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RELAY_P_OFF: 0 [0|0] "" 0 34 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RELAY_P_ON: 0 [0|0] "" 0 35 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDCurMode: 0 [0|0] "" 0 36 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDCurSW: 0 [0|0] "" 0 37 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDCur3: 0 [0|0] "" 0 38 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDCur2: 0 [0|0] "" 0 39 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDCur1: 0 [0|0] "" 0 40 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDischargeCurSave: 0 [0|0] "" 0 41 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalDischargeCurReset: 0 [0|0] "" 0 42 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdNMode: 0 [0|0] "" 0 43 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdPMode: 0 [0|0] "" 0 44 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdNSave: 0 [0|0] "" 0 45 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdNReset: 0 [0|0] "" 0 46 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdPSave: 0 [0|0] "" 0 47 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdPReset: 0 [0|0] "" 0 48 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdNSW: 0 [0|0] "" 0 49 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdPSW: 0 [0|0] "" 0 50 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdN3: 0 [0|0] "" 0 51 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdN2: 0 [0|0] "" 0 52 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdN1: 0 [0|0] "" 0 53 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdP3: 0 [0|0] "" 0 54 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdP2: 0 [0|0] "" 0 55 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalGfdP1: 0 [0|0] "" 0 56 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalPcsVol3: 0 [0|0] "" 0 57 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalCCur3: 0 [0|0] "" 0 58 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVol3: 0 [0|0] "" 0 59 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalCCurMode: 0 [0|0] "" 0 60 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalPcsMode: 0 [0|0] "" 0 61 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalCCurSW: 0 [0|0] "" 0 62 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalPcsVolSW: 0 [0|0] "" 0 63 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalCCur2: 0 [0|0] "" 0 64 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalCCur1: 0 [0|0] "" 0 65 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalPcsVol2: 0 [0|0] "" 0 66 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalPcsVol1: 0 [0|0] "" 0 67 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatMode: 0 [0|0] "" 0 68 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVolSW: 0 [0|0] "" 0 69 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVol2: 0 [0|0] "" 0 70 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalChargeCurSave: 0 [0|0] "" 0 71 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalPcsVolSave: 0 [0|0] "" 0 72 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVolSave: 0 [0|0] "" 0 73 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalChargeCurReset: 0 [0|0] "" 0 74 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalPcsVolReset: 0 [0|0] "" 0 75 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVolReset: 0 [0|0] "" 0 76 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ DropDownList: 0 [0|0] "" 0 77 DUMMY_NODE_VECTOR8003 Vector__XXX;
+
+EV_ CAL_GFD_N: 0 [0|0] "" 0 78 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CAL_GFD_P: 0 [0|0] "" 0 79 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CAL_CUR: 0 [0|0] "" 0 80 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CAL_PCSVOL: 0 [0|0] "" 0 81 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CalBatVol1: 0 [0|0] "" 0 82 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ LOG_STOP: 0 [0|0] "" 0 83 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CellBalance_off_cmd: 0 [0|0] "" 0 84 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CellBal_TargetVol: 0 [0|0] "" 0 85 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ CellBalance_on_cmd: 0 [0|0] "" 0 86 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_GFD: 0 [0|0] "" 0 87 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_USOC: 0 [0|0] "" 0 88 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_OSOC: 0 [0|0] "" 0 89 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_CERR: 0 [0|0] "" 0 90 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_CDE: 0 [0|0] "" 0 91 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_TIM: 0 [0|0] "" 0 92 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_OBATV: 0 [0|0] "" 0 93 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_UT: 0 [0|0] "" 0 94 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_OT: 0 [0|0] "" 0 95 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_UCV: 0 [0|0] "" 0 96 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_OCV: 0 [0|0] "" 0 97 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_ODC: 0 [0|0] "" 0 98 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Alarm_OCC: 0 [0|0] "" 0 99 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RELAY_SWITCH: 0 [0|0] "" 0 100 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RELAY_ON: 0 [0|0] "" 0 101 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ LOG_START: 0 [0|0] "" 0 102 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RealSoc: 1 [0|0] "" 0 103 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RealPackVol: 1 [0|0] "" 0 104 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ RealCurrent: 1 [0|0] "" 0 105 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ Caption: 0 [0|0] "" 0 106 DUMMY_NODE_VECTOR8000 Vector__XXX;
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+CM_ SG_ 3221225472 submic2_reset_count "SUBMIC#2 reset count ";
+CM_ SG_ 3221225472 submic1_reset_count "SUBMIC#1 reset count ";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BU_  "CANoeJitterMax" INT 0 0;
+BA_DEF_ BU_  "CANoeJitterMin" INT 0 0;
+BA_DEF_ BU_  "CANoeDrift" INT 0 0;
+BA_DEF_ BU_  "CANoeStartDelay" INT 0 0;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "CANoeJitterMax" 0;
+BA_DEF_DEF_  "CANoeJitterMin" 0;
+BA_DEF_DEF_  "CANoeDrift" 0;
+BA_DEF_DEF_  "CANoeStartDelay" 0;
+

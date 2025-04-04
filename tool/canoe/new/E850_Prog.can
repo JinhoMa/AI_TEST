@@ -1,0 +1,1331 @@
+/*@!Encoding:949*/
+variables
+{
+    byte d0;
+    int error;
+    int timeout =1;
+    int acc_on=0;
+    msTimer acc_timer;
+    msTimer cal_timer;
+    char rtcstr[100];
+    int cur_value;
+    int cur_cnt;
+}
+
+on start
+{
+    //setLogFileName("LOG1","c:\\canoe\\myconfig\\log.txt");
+    //startLogging();
+    SysSetVariableInt(sysvar::MyNameSpace::AccessLED, 0);
+    SysSetVariableInt(sysvar::MyNameSpace::svSwitch, 0);
+    SysSetVariableInt(sysvar::MyNameSpace::svar_dataLED, 0);
+    SysSetVariableInt(sysvar::MyNameSpace::svar_relay, 0);
+    @CellBal_TargetVol = 5000;
+}
+
+
+on sysvar sysvar::MyNameSpace::AccessMode
+{
+     int a;
+     message request msg;
+     message response rmsg;
+
+     a = SysGetVariableInt(sysvar::MyNameSpace::AccessMode);
+     write("access mode = %d\n", a);
+     if(a){
+           if(acc_on){
+                write("aready acc mode on\n");
+                return;
+           }
+           msg.D0 = 0x10 ;
+           msg.D1 = 0x02 ;
+           output(msg);
+           putValue(Caption, "");
+           setTimer(acc_timer, 2000);
+     }
+ 
+}
+on sysvar sysvar::MyNameSpace::_bt_alarm_reset
+{
+  int r ;
+  message request msg;
+  r= SysGetVariableInt(sysvar::MyNameSpace::_bt_alarm_reset);
+  if(r==1){
+    msg.D0 = 0x60;
+    msg.D1 = 0x01;
+    output(msg);
+  }
+}
+
+on message response
+{
+    word seed;
+    long ad;
+    word key_v;
+    word i,n, n2;
+    char temp[20];
+    message request msg;
+    timeout = 0;
+    d0 = this.byte(0);
+    switch(d0){
+        case 0x7f:
+            error = 1;
+            if(this.byte(1) == 0x50){
+                acc_on = 1;
+                SysSetVariableInt(sysvar::MyNameSpace::AccessLED, 1);
+            }
+            break;
+       case 0x50:
+            error = 0;
+            msg.D0 = 0x27;
+            msg.D1 = 0x01;
+            output(msg);
+            setTimer(acc_timer, 1000);
+            break;
+        case 0x67:
+            error = 0;
+            if(this.byte(1) == 0x01){
+                seed = this.byte(2)<<8 | this.byte(3);
+                write("seed =%x\n", seed);
+                key_v = (0x9164*seed + 0x1665)&0xffff;
+                msg.D0 = 0x27;
+                msg.D1 = 0x02;
+                msg.D2 = key_v >> 8;
+                msg.D3 = key_v ;
+                output(msg);
+                setTimer(acc_timer, 1000);
+            }else{
+                acc_on = 1;
+                SysSetVariableInt(sysvar::MyNameSpace::AccessLED, 1);
+                putValue(Caption, "Access Success !!!");
+            }
+            break;
+        case 0x89:  //RTC
+            if(this.byte(2) == 0x00){ //년,월,일
+                n=0;
+                n = snprintf(rtcstr,elcount(rtcstr),"20%d-%d-%d ", this.byte(3), this.byte(4), this.byte(5));
+            }if(this.byte(2) == 0x01){  //시,분,초
+                n2 =snprintf(temp,elcount(temp),"%d:%d:%d",this.byte(3), this.byte(4), this.byte(5));
+                for(i=0; i<n2; i++){
+                    rtcstr[n+i] = temp[i];
+                }
+                rtcstr[n+i]= 0;
+                putValue(RTCString, rtcstr);
+                
+            }
+            break;
+        case 0xE2:  // READ BPU TEMP
+             if(this.byte(1)==0x02){
+                ad = this.byte(2);
+                ad = (ad<<8) | this.byte(3);
+                @BPUTEMP_DATA= (float)ad/100.0;
+             }
+            break;
+        case 0xF0:  //bat Calibration measure
+             if(this.byte(1) == 0x02){
+                ad = this.byte(2);
+                ad = (ad<<8) | this.byte(3);
+                @CalBatVol1 = ad;
+                ad = this.byte(4);
+                ad = (ad<<8) | this.byte(5);
+                @CalBatVol2 = ad;
+                ad = this.byte(6);
+                ad = (ad<<8) | this.byte(7);
+                @CalBatVol3 = ad;
+
+             }
+             break;
+        case 0xF1:  // pcs calibration measure
+             if(this.byte(1) == 0x02){
+                ad = this.byte(2);
+                ad = (ad<<8) | this.byte(3);
+                @CalPcsVol1 = ad;
+                ad = this.byte(4);
+                ad = (ad<<8) | this.byte(5);
+                @CalPcsVol2 = ad;
+                ad = this.byte(6);
+                ad = (ad<<8) | this.byte(7);
+                @CalPcsVol3 = ad;
+
+             }
+             break;
+        case 0xF2:   // charge current calibration measure
+             if( this.byte(1) == 0x02 ){
+                ad = this.byte(3);
+                ad = (ad<<8) | this.byte(4);
+                ad = (ad<<8) | this.byte(5);
+                ad = (ad<<8) | this.byte(6);
+                if( this.byte(2)== 0x00 ){
+                    @CalCCur1 = ad;
+                }else if( this.byte(2) == 0x01){
+                    @CalCCur2 = ad;
+                }else if( this.byte(2) == 0x02){
+                    @CalCCur3 = ad;
+                }
+             }
+             break;
+        case 0xF3:  // cal gfd p
+              if( this.byte(1) == 0x02){
+                ad = this.byte(2);
+                ad = (ad<<8) | this.byte(3);
+                @CalGfdP1 = ad;
+                ad = this.byte(4);
+                ad = (ad<<8) | this.byte(5);
+                @CalGfdP2 = ad;
+                ad = this.byte(6);
+                ad = (ad<<8) | this.byte(7);
+                @CalGfdP3 = ad;
+
+             }
+             break;  
+        case 0xF4:   // cal gfd n
+              if( this.byte(1) == 0x02){
+                ad = this.byte(2);
+                ad = (ad<<8) | this.byte(3);
+                @CalGfdN1 = ad;
+                ad = this.byte(4);
+                ad = (ad<<8) | this.byte(5);
+                @CalGfdN2 = ad;
+                ad = this.byte(6);
+                ad = (ad<<8) | this.byte(7);
+                @CalGfdN3 = ad;
+             }
+             break;           
+       case 0xF6:   // dcurrent calibration measure
+             if( this.byte(1) == 0x02){
+                ad = this.byte(3);
+                ad = (ad<<8) | this.byte(4);
+                ad = (ad<<8) | this.byte(5);
+                ad = (ad<<8) | this.byte(6);
+                if( this.byte(2)== 0x00 ){
+                    @CalDCur1 = ad;
+                }else if( this.byte(2) == 0x01){
+                    @CalDCur2 = ad;
+                }else if( this.byte(2) == 0x02){
+                    @CalDCur3 = ad;
+                }
+             }
+             break;
+        default:
+            break;
+    }
+}
+
+on timer acc_timer
+{
+    if(timeout==1){
+       write("time out\n");
+       putValue(Caption, " response msg timeout!!!!");
+    }
+}
+
+on envVar Caption
+{
+}
+
+on signal Current
+{
+    float cur ;
+    cur = (float)((long)getRawSignal(ecu2::Current)/100.0);
+    @RealCurrent = cur;
+
+}
+
+on signal PACK_VOL
+{
+   float vol ;
+    vol = (float)((long)getRawSignal(ecu2::PACK_VOL)/10.0);
+    //write("vol=%f\n",vol );
+    @RealPackVol = vol;
+}
+
+on signal SW_VOL
+{
+   float vol ;
+    vol = (float)((long)getSignal(RACK::SW_VOL)/10.0);
+    //write("vol=%f\n",vol );
+    @SwVol = vol;
+}
+
+on signal SOC
+{
+    float soc ;
+    soc = (float)((long)getRawSignal(ecu2::SOC)/100.0);
+    //write("soc=%f\n",soc );
+    @RealSoc = soc;
+}
+
+on sysvar sysvar::MyNameSpace::svar_bt_dataon
+{
+    int a;
+    message request msg;
+    a = SysGetVariableInt(sysvar::MyNameSpace::svar_bt_dataon);
+    if(a == 1){
+        msg.D0 = 1;
+        output(msg);
+        putValue(Caption, "data start");
+        sysSetVariableInt(sysvar::MyNameSpace::svar_dataLED, 1);
+    }else{
+
+    }
+}
+
+on sysvar sysvar::MyNameSpace::svar_bt_dataoff
+{
+    int a;
+    message request msg;
+    a = SysGetVariableInt(sysvar::MyNameSpace::svar_bt_dataoff);
+    if(a == 1){
+        msg.D0 = 0;
+        output(msg);
+        putValue(Caption, "data stop");
+        sysSetVariableInt(sysvar::MyNameSpace::svar_dataLED, 0);     
+    }else{
+    }
+}
+
+on sysvar sysvar::MyNameSpace::svar_bt_relayon
+{
+    int a;
+    message request msg;
+    a = SysGetVariableInt(sysvar::MyNameSpace::svar_bt_relayon);
+    if(acc_on == 0){
+        putValue(Caption, "First, Push Acc On\n");
+     }else{
+       write("relay_on");
+         if(a ==1){
+               msg.D0 = 0x30 ;
+               msg.D1 = 0x01 ;
+               @RELAY_SWITCH = 1;
+               putValue(Caption, "Relay ON");
+               output(msg);
+           sysSetVariableInt(sysvar::MyNameSpace::svar_relay, 1);     
+         }  
+    }
+}
+
+on sysvar sysvar::MyNameSpace::svar_bt_relayoff
+{
+    int a;
+    message request msg;
+    a = SysGetVariableInt(sysvar::MyNameSpace::svar_bt_relayoff);
+    if(acc_on == 0){
+        putValue(Caption, "First, Push Acc On\n");
+     }else{
+       write("relay_off");
+         if(a ==1){
+               msg.D0 = 0x30;
+               msg.D1 = 0x02;
+               @RELAY_SWITCH = 0;
+               putValue(Caption, "Relay OFF");
+               output(msg);
+           sysSetVariableInt(sysvar::MyNameSpace::svar_relay, 0);     
+         }  
+    }
+}
+on envVar CellBalance_on_cmd
+{
+    message request msg;
+    int temp;
+    putValue(Caption,"");
+    if(acc_on == 0){
+        putValue(Caption, "First, Push Acc On\n");
+    }else{
+        if(@this == 1){
+            temp = @CellBal_TargetVol;
+            if(temp> 4200 || temp < 3000){
+                putValue(Caption, "OutOf Range- Target VOL !!!\n");
+                return;
+            }
+            msg.D0 = 0x20;
+            msg.D1 = 0x1;
+            msg.D2 = (temp>>8 )&0xFF;
+            msg.D3 = (temp &0xFF);
+            output(msg);
+            write("msg d2(%x), d3(%x)\n", msg.D2, msg.D3);
+            putValue(Caption, "CellBalance on");
+
+        }
+    }
+}
+
+on envVar CellBal_TargetVol
+{
+}
+
+on envVar CellBalance_off_cmd
+{
+    message request msg;
+    putValue(Caption,"");
+    if(acc_on == 0){
+        putValue(Caption, "First, Push Acc On\n");
+    }else{
+        if(@this == 1){
+            putValue(Caption, "CellBalance OFF");
+            msg.D0 = 0x20;
+            msg.D1 = 0x2;
+            output(msg);
+        }
+    }
+}
+
+on sysvar sysvar::MyNameSpace::svar_cb_on
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_cb_on);
+  if( button  == 1 ){
+    msg.D0 = 0x20;
+    msg.D1 = 0x01;
+    output(msg);
+  }
+}
+on sysvar sysvar::MyNameSpace::svar_cb_odd_on
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_cb_odd_on);
+  if( button  == 1 ){
+    msg.D0 = 0x20;
+    msg.D1 = 0x03;
+    output(msg);
+  }
+}
+on sysvar sysvar::MyNameSpace::svar_cb_off
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_cb_off);
+  if( button  == 1 ){
+    msg.D0 = 0x20;
+    msg.D1 = 0x02;
+    output(msg);
+  }
+}
+
+on sysvar sysvar::MyNameSpace::svar_bt_factoryreset
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_bt_factoryreset);
+  if( button  == 1 ){
+    msg.D0 = 0x24;
+    msg.D1 = 0x01;
+    output(msg);
+    SysSetVariableInt(sysvar::MyNameSpace::AccessLED, 0);
+    SysSetVariableInt(sysvar::MyNameSpace::svSwitch, 0);
+    @CellBal_TargetVol = 5000;
+    SysSetVariableInt(sysvar::MyNameSpace::svar_dataLED, 0);
+    SysSetVariableInt(sysvar::MyNameSpace::svar_relay, 0);
+    acc_on=0;
+  }
+}
+/////////////////////////////////////////////////////////////////////
+// FUSE TEST
+/////////////////////////////////////////////////////////////////////
+on sysvar sysvar::MyNameSpace::svar_fuse_off
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_fuse_off);
+  if( button  == 1 ){
+    msg.D0 = 0xF0;
+    msg.D1 = 0x01;
+    output(msg);
+  }  
+}
+
+on sysvar sysvar::MyNameSpace::svar_fuse_diag_on
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_fuse_diag_on);
+  if( button  == 1 ){
+    msg.D0 = 0xF0;
+    msg.D1 = 0xEE;
+    output(msg);
+  }  
+}
+
+/////////////////////////////////////////////////////////////////////
+// RELAY TEST
+/////////////////////////////////////////////////////////////////////
+on sysvar sysvar::MyNameSpace::svar_fet_diag_on
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_fet_diag_on);
+  if( button  == 1 ){
+    msg.D0 = 0xA0;
+    msg.D1 = 0xEE;
+    output(msg);
+  }  
+}
+on sysvar sysvar::MyNameSpace::svar_fet_diag_off
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_fet_diag_off);
+  if( button  == 1 ){
+    msg.D0 = 0xA0;
+    msg.D1 = 0xFF;
+    output(msg);
+  }  
+}
+on sysvar sysvar::MyNameSpace::svar_cfet_on
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_cfet_on);
+  if( button  == 1 ){
+    msg.D0 = 0xA0;
+    msg.D1 = 0x01;
+    output(msg);
+  }  
+}
+on sysvar sysvar::MyNameSpace::svar_cfet_off
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_cfet_off);
+  if( button  == 1 ){
+    msg.D0 = 0xA0;
+    msg.D1 = 0x02;
+    output(msg);
+  }  
+}
+on sysvar sysvar::MyNameSpace::svar_dfet_on
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_dfet_on);
+  if( button  == 1 ){
+    msg.D0 = 0xA0;
+    msg.D1 = 0x11;
+    output(msg);
+  }  
+}
+on sysvar sysvar::MyNameSpace::svar_dfet_off
+{
+  message request msg;
+  int button;
+  button = SysGetVariableInt(sysvar::MyNameSpace::svar_dfet_off);
+  if( button  == 1 ){
+    msg.D0 = 0xA0;
+    msg.D1 = 0x12;
+    output(msg);
+  }  
+}
+
+on message R_StringModel1
+{
+    int set_ena;
+    int set_con;
+    int cfet;
+    int dfet;
+    set_ena = this.byte(0);
+    set_con = this.byte(1);
+    cfet = this.byte(2);
+    dfet = this.byte(3);
+    if(set_ena ==1){
+        SysSetVariableInt(sysvar::MyNameSpace::svar_stringenable, 1);
+    }else if(set_ena == 2 || set_ena == 0) {
+        SysSetVariableInt(sysvar::MyNameSpace::svar_stringenable, 0);
+    }
+    if(set_con == 1){
+        SysSetVariableInt(sysvar::MyNameSpace::svar_conenable, 1);      
+    }else if(set_con == 2 || set_con == 0){
+        SysSetVariableInt(sysvar::MyNameSpace::svar_conenable, 0);
+    }
+    if( cfet == 0 || dfet == 0){
+      SysSetVariableInt(sysvar::MyNameSpace::svar_cur_simulon, 0);
+      SysSetVariableInt(sysvar::MyNameSpace::svar_sim_current, 0);
+    }
+}
+
+on message RACK2
+{
+    long temp;
+    temp = (this.byte(0)<<24 ) & 0xFF000000  ;
+    temp |=  (this.byte(1)<<16) & 0x00FF0000 ;
+    temp |= ( this.byte(2)<<8)  & 0x0000ff00 ;
+    temp |= this.byte(3) & 0xff ;
+    //write("alarm = 0x%x\n", temp);
+    if(temp & 0x1){
+        @Alarm_CERR = 2;
+    }else{
+        @Alarm_CERR = 0;
+    }
+
+    if( temp & 0x6){
+        if(temp & 0x2){
+            @Alarm_OT = 2;
+        }else{
+            @Alarm_OT = 1;
+        }
+    }else{
+            @Alarm_OT = 0;        
+    }
+
+    if( temp & 0x18){
+        if(temp & 0x8){
+            @Alarm_UT = 2;
+        }else{
+            @Alarm_UT = 1;
+        }
+    }else{
+            @Alarm_UT = 0;
+    }
+
+    if( temp & 0x60){
+        if(temp & 0x20){
+            @Alarm_OCC = 2;
+        }else{
+            @Alarm_OCC = 1;
+        }
+    }else{
+            @Alarm_OCC = 0;
+    }
+
+    if( temp & 0x180){
+        if(temp & 0x80){
+            @Alarm_ODC = 2;
+        }else{
+            @Alarm_ODC = 1;
+        }
+    }else{
+            @Alarm_ODC = 0;
+    }
+
+    if( temp & 0x600){
+        if(temp & 0x200){
+            @Alarm_OBATV = 2;
+        }else{
+            @Alarm_OBATV = 1;
+        }
+    }else{
+            @Alarm_OBATV = 0;
+    }
+
+    if( temp & 0x1800){
+        if(temp & 0x800){
+            @Alarm_UBATV = 2;
+        }else{
+            @Alarm_UBATV = 1;
+        }
+    }else{
+            @Alarm_UBATV = 0;
+    }
+
+    if( temp & 0x6000){
+        if(temp & 0x2000){
+            @Alarm_USOC = 2;
+        }else{
+            @Alarm_USOC = 1;
+        }
+    }else{
+            @Alarm_USOC = 0;
+    }
+
+    if( temp & 0x18000){
+        if(temp & 0x2000){
+            @Alarm_OSOC = 2;
+        }else{
+            @Alarm_OSOC = 1;
+        }
+    }else{
+            @Alarm_OSOC = 0;
+    }
+
+    if( temp & 0x20000){
+            @Alarm_CDE = 1;
+    }else{
+            @Alarm_CDE = 0;
+    }
+
+    if( temp & 0xC0000){
+        if(temp & 0x40000){
+            @Alarm_TIM = 2;
+        }else{
+            @Alarm_TIM = 1;
+        }
+    }else{
+            @Alarm_TIM = 0;
+    }
+
+    if( temp & 0x400000){
+            @Alarm_GFD = 2;
+    }else{
+            @Alarm_GFD = 0;
+    }
+
+    if( temp & 0x6000000){
+        if(temp & 0x2000000){
+            @Alarm_Others = 2;
+        }else{
+            @Alarm_Others = 1;
+        }
+    }else{
+            @Alarm_Others = 0;
+    }
+
+}
+on message VendorAlarm
+{
+    long temp;
+    long sm_alarm;
+    temp = (this.byte(0)<<24 ) & 0xFF000000  ;
+    temp |=  (this.byte(1)<<16) & 0x00FF0000 ;
+    temp |= ( this.byte(2)<<8)  & 0x0000ff00 ;
+    temp |= this.byte(3) & 0xff ;
+    sm_alarm = (this.byte(4)<<8)&0xFF00;
+    sm_alarm |= this.byte(5)&0xff;
+    //write("alarm = 0x%x\n", temp);
+    if(temp & 0x3){
+        if( temp & 0x1){
+          @Alarm_OCV = 2;
+        }else{
+          @Alarm_OCV = 1;
+        }
+    }else{
+        @Alarm_OCV = 0;
+    }
+    
+    if(temp & 0xC){
+        if( temp & 0x4){
+          @Alarm_UCV = 2;
+        }else{
+          @Alarm_UCV = 1;
+        }
+    }else{
+        @Alarm_UCV = 0;
+    }
+    if(sm_alarm & 0x01){
+      sysSetVariableInt(sysvar::MyNameSpace::_sm_mcuwatch, 2);
+    }else{
+      sysSetVariableInt(sysvar::MyNameSpace::_sm_mcuwatch, 0);
+    }
+    if(sm_alarm & 0x02){
+      sysSetVariableInt(sysvar::MyNameSpace::_sm_comerror, 2);
+    }else{
+      sysSetVariableInt(sysvar::MyNameSpace::_sm_comerror, 0);
+    }
+    if(sm_alarm & 0x04){
+      sysSetVariableInt(sysvar::MyNameSpace::_sm_eepchksum, 2);
+    }else{
+      sysSetVariableInt(sysvar::MyNameSpace::_sm_eepchksum, 0);
+    }
+    if(sm_alarm & 0x08){
+      sysSetVariableInt(sysvar::MyNameSpace::_sm_volplaus, 2);
+    }else{
+      sysSetVariableInt(sysvar::MyNameSpace::_sm_volplaus, 0);
+    }
+
+}
+
+
+
+on envVar CalBatVolSW
+{
+    message request msg;
+    write("CakBat = 0x%x\n", @this);
+    if( @this > 0){
+        setTimer( cal_timer, 1000);
+        @CalBatMode = @this;
+    }
+}
+
+on envVar CalBatVolReset
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB0;
+        msg.D1 = 0x01;
+        output(msg);
+        @CalBatMode = 0;
+        @CalBatVolSW=0;
+        @CalBatVolSetLow=0;
+        @CalBatVolSetPointMid=0;
+    }
+
+}
+
+on envVar CalBatVolSave
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB0;
+        msg.D1 = 0x03;
+        if(@CalBatVolSetLow == 1){
+          msg.D2 = 1;
+        }else if( @CalBatVolSetPointMid == 1){
+          msg.D2 = 2;          
+        }else{
+          msg.D2 = 0xff;
+        }
+        output(msg);
+        cancelTimer(cal_timer);
+        @CalBatVolSW=0;
+    }
+
+}
+
+on envVar CalPcsVolSave
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB1;
+        msg.D1 = 0x03;
+        output(msg);
+        cancelTimer(cal_timer);
+        @CalPcsVolSW=0;
+    }
+}
+
+on envVar CalPcsVolReset
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB1;
+        msg.D1 = 0x01;
+        output(msg);
+        @CalPcsMode = 0;
+        @CalPcsVolSW=0;
+    }
+}
+
+on envVar CalChargeCurSave
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB2;
+        msg.D1 = 0x03;
+        if(@CalChargeCurSetLow == 1){
+          msg.D2 = 1;
+        }else if( @CalChargeCurSetMid == 1){
+          msg.D2 = 2;          
+        }else{
+          msg.D2 = 0xff;
+        }      
+        output(msg);
+        cancelTimer(cal_timer);
+        @CalCCurSW=0;
+    }
+}
+
+on envVar CalChargeCurReset
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB2;
+        msg.D1 = 0x01;
+        output(msg);
+        @CalCCurMode = 0;
+        @CalCCurSW=0;
+        @CalChargeCurSetLow=0;
+        @CalChargeCurSetMid=0;
+    }
+}
+
+on envVar CalPcsVolSW
+{
+
+    write("CalPCS = 0x%x\n", @this);
+    if( @this > 0){
+        setTimer( cal_timer, 1000);
+        @CalPcsMode = @this;
+    }
+}
+
+on envVar CalCCurSW
+{
+    write("CalCCur = 0x%x\n", @this);
+    if( @this > 0){
+        setTimer( cal_timer, 1000);
+        @CalCCurMode = @this;
+    }
+
+}
+
+on envVar CalGfdPSW
+{
+    write("CalGfdPMode = 0x%x\n", @this);
+    if( @this > 0){
+        setTimer( cal_timer, 1000);
+        @CalGfdPMode = @this;
+    }
+
+
+}
+
+on envVar CalGfdNSW
+{
+    write("CalGfdNMode = 0x%x\n", @this);
+    if( @this > 0){
+        setTimer( cal_timer, 1000);
+        @CalGfdNMode = @this;
+    }
+
+}
+
+on envVar CalGfdPReset
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB3;
+        msg.D1 = 0x01;
+        output(msg);
+        @CalGfdPMode = 0;
+        @CalGfdPSW=0;
+    }
+}
+
+on envVar CalGfdPSave
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB3;
+        msg.D1 = 0x03;
+        output(msg);
+        cancelTimer(cal_timer);
+        @CalGfdPSW=0;
+    }
+}
+
+on envVar CalGfdNReset
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB4;
+        msg.D1 = 0x01;
+        output(msg);
+        @CalGfdNMode = 0;
+        @CalGfdNSW=0;
+    }
+}
+
+on envVar CalGfdNSave
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB4;
+        msg.D1 = 0x03;
+        output(msg);
+        cancelTimer(cal_timer);
+        @CalGfdNSW=0;
+    }
+}
+
+on envVar CalDischargeCurReset
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB6;
+        msg.D1 = 0x01;
+        output(msg);
+        @CalDCurMode = 0;
+        @CalDCurSW=0;
+        @CalDischargeCurLow=0;
+        @CalDischargeCurMid=0;
+    }
+}
+
+on envVar CalDischargeCurSave
+{
+    message request msg;
+    if( @this == 1){
+        msg.D0 = 0xB6;
+        msg.D1 = 0x03;
+        if(@CalDischargeCurLow == 1){
+          msg.D2 = 1;
+        }else if( @CalDischargeCurMid == 1){
+          msg.D2 = 2;          
+        }else{
+          msg.D2 = 0xff;
+        }
+        output(msg);
+        cancelTimer(cal_timer);
+        @CalDCurSW=0;
+    }
+}
+
+on envVar CalDCurSW
+{
+    write("CalDCur = 0x%x\n", @this);
+    if( @this > 0){
+        setTimer( cal_timer, 1000);
+        @CalDCurMode = @this;
+    }
+
+}
+
+
+on envVar FANOUT_ON
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0xA5;
+        msg.D1 = 0x01;
+        output(msg);
+    }
+
+}
+
+on envVar FANOUT_OFF
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0xA5;
+        msg.D1 = 0x02;
+        output(msg);
+    }
+
+}
+
+on envVar PWRLED_ON
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0x47;
+        msg.D1 = 0x01;
+        output(msg);
+    }
+
+}
+
+on envVar PWRLED_OFF
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0x47;
+        msg.D1 = 0x02;
+        output(msg);
+    }
+}
+
+on envVar LNKLED_ON
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0x47;
+        msg.D1 = 0x21;
+        output(msg);
+    }
+
+}
+
+on envVar LNKLED_OFF
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0x47;
+        msg.D1 = 0x22;
+        output(msg);
+    }
+}
+
+on envVar FLTLED_ON
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0x47;
+        msg.D1 = 0x11;
+        output(msg);
+    }
+}
+
+on envVar FLTLED_OFF
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0x47;
+        msg.D1 = 0x12;
+        output(msg);
+    }
+}
+
+on envVar RTC_READ
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0x49;
+        msg.D1 = 0x02;
+        output(msg);
+    }
+}
+
+on envVar BPUTEMP_READ
+{
+    message request msg;
+
+    if( @this == 1){
+        msg.D0 = 0xA2;
+        msg.D1 = 0x02;
+        output(msg);
+    }
+}
+
+on timer cal_timer
+{
+    message request msg;
+    //send measure Bat Voltage
+    if( @CalBatMode > 0){
+        msg.D0 = 0xB0;
+        msg.D1 = 0x02;
+        if(@CalBatVolSetLow == 1){
+          msg.D2 = 1;
+        }else if( @CalBatVolSetPointMid == 1){
+          msg.D2 = 2;          
+        }else{
+          msg.D2 = 0xff;
+        }
+        output(msg);
+        setTimer(cal_timer, 500);
+    }
+    // send  measure PCS voltage
+    if( @CalPcsMode > 0){
+        msg.D0 = 0xB1;
+        msg.D1 = 0x02;
+        msg.D2 = @CalPcsMode;
+        output(msg);
+        setTimer(cal_timer, 500);
+    }
+    // send charge current
+    if( @CalCCurMode > 0){
+        msg.D0 = 0xB2;
+        msg.D1 = 0x02;
+        if(@CalChargeCurSetLow == 1){
+          msg.D2 = 1;
+        }else if( @CalChargeCurSetMid == 1){
+          msg.D2 = 2;          
+        }else{
+          msg.D2 = 0xff;
+        }      
+        output(msg);
+        setTimer(cal_timer, 500);
+    }
+    // send discharge current
+    if( @CalDCurMode > 0){
+        msg.D0 = 0xB6;
+        msg.D1 = 0x02;
+        if(@CalDischargeCurLow == 1){
+          msg.D2 = 1;
+        }else if( @CalDischargeCurMid == 1){
+          msg.D2 = 2;          
+        }else{
+          msg.D2 = 0xff;
+        }
+        output(msg);
+        setTimer(cal_timer, 500);
+    }
+    // send GFD P Mode
+    if( @CalGfdPMode > 0){
+        msg.D0 = 0xB3;
+        msg.D1 = 0x02;
+        msg.D2 = @CalGfdPMode;
+        output(msg);
+        setTimer(cal_timer, 500);
+    }
+    // send GFD N Mode
+    if( @CalGfdNMode > 0){
+        msg.D0 = 0xB4;
+        msg.D1 = 0x02;
+        msg.D2 = @CalGfdNMode;
+        output(msg);
+        setTimer(cal_timer, 500);
+    }
+
+}
+
+on envVar CalBatVolRead
+{
+    message request msg;
+    msg.D0 = 0xB0;
+    msg.D1 = 0x02;
+    msg.D2 = 0x00;
+    output(msg);
+    if( @CalBatVolSetLow ==1 || @CalBatVolSetPointMid == 1){
+      setTimer( cal_timer, 1000);
+      @CalBatMode =1;  
+    }
+}
+on envVar CalBatVolSetLow
+{
+    if(@this == 1){
+     message request msg;
+     msg.D0 = 0xB0;
+     msg.D1 = 0x04;
+     msg.D2 = 0x01;
+     output(msg);   
+     @CalBatVolSetPointMid = 0;      
+    }
+}
+
+on envVar CalBatVolSetPointMid
+{
+    if(@this == 1){
+     message request msg;
+     msg.D0 = 0xB0;
+     msg.D1 = 0x04;
+     msg.D2 = 0x02;
+    if( @CalBatVolMidRef != 0){ 
+        msg.D3 = (@CalBatVolMidRef) >> 8 & 0xff;
+        msg.D4 = @CalBatVolMidRef & 0xff;
+    }else{
+        msg.D3 = 0xff;
+        msg.D4 = 0xff;
+    }        
+    output(msg);   
+     @CalBatVolSetLow = 0;
+    }
+}
+
+on envVar CalPcsVolRead
+{
+    message request msg;
+    msg.D0 = 0xB1;
+    msg.D1 = 0x02;
+    msg.D2 = 0x00;
+    output(msg);   
+}
+
+on envVar CalChargeCurRead
+{
+    message request msg;
+    msg.D0 = 0xB2;
+    msg.D1 = 0x02;
+   // msg.D2 = 0x00;
+    output(msg);   
+    if( @CalChargeCurSetLow ==1 || @CalChargeCurSetMid == 1){
+      setTimer( cal_timer, 1000);
+      @CalCCurMode =1;  
+    }  
+}
+
+on envVar CalChargeCurSetLow
+{
+    if(@this == 1){
+    message request msg;
+    msg.D0 = 0xB2;
+    msg.D1 = 0x04;
+    msg.D2 = 0x01;
+    output(msg);   
+      @CalChargeCurSetMid = 0;
+    }
+}
+on envVar CalChargeCurSetMid
+{
+    if(@this == 1){
+    message request msg;
+    msg.D0 = 0xB2;
+    msg.D1 = 0x04;
+    msg.D2 = 0x02;
+    if( @CalChargeCurMidRef != 0){ 
+        msg.D3 = (@CalChargeCurMidRef) >> 8 & 0xff;
+        msg.D4 = @CalChargeCurMidRef & 0xff;
+    }else{
+        msg.D3 = 0xff;
+        msg.D4 = 0xff;
+    }    
+      output(msg);   
+      @CalChargeCurSetLow = 0;
+    }
+}
+on envVar CalDischargeCurRead
+{
+    message request msg;
+    msg.D0 = 0xB6;
+    msg.D1 = 0x02;
+    msg.D2 = 0x00;
+    output(msg);   
+    if( @CalDischargeCurLow ==1 || @CalDischargeCurMid == 1){
+      setTimer( cal_timer, 1000);
+      @CalDCurMode =1;  
+    }    
+}
+
+on envVar CalDischargeCurLow
+{
+      if(@this == 1){
+
+    message request msg;
+    msg.D0 = 0xB6;
+    msg.D1 = 0x04;
+    msg.D2 = 0x01;
+    output(msg);   
+        @CalDischargeCurMid = 0;
+      }
+}
+on envVar CalDischargeCurMid
+{
+      if(@this == 1){
+
+    message request msg;
+    msg.D0 = 0xB6;
+    msg.D1 = 0x04;
+    msg.D2 = 0x02;
+    if( @CalDischargeCurMidRef != 0){ 
+        msg.D3 = (@CalDischargeCurMidRef) >> 8 & 0xff;
+        msg.D4 = @CalDischargeCurMidRef & 0xff;
+    }else{
+        msg.D3 = 0xff;
+        msg.D4 = 0xff;
+    }
+        
+    output(msg);   
+        @CalDischargeCurLow = 0;
+      }
+}
+
+on envVar CalGfdNRead
+{
+    message request msg;
+    msg.D0 = 0xB4;
+    msg.D1 = 0x02;
+    msg.D2 = 0x00;
+    output(msg); 
+}
+
+on envVar CalGfdPRead
+{
+    message request msg;
+    msg.D0 = 0xB3;
+    msg.D1 = 0x02;
+    msg.D2 = 0x00;
+    output(msg); 
+}
+
+
+on sysvar MyNameSpace::svar_cur_simulon
+{
+    int cur ;
+    message request msg;
+    if(@this == 1){
+      cur = sysGetVariableInt(sysvar::MyNameSpace::svar_sim_current);
+      msg.D0 = 0xC0;
+      msg.D1 = 1;
+      msg.D2 = (cur >> 8);
+      msg.D3 = cur& 0xFf;
+      output(msg);
+    }
+}
+
+on sysvar MyNameSpace::svar_cur_simuloff
+{
+    int cur ;
+    message request msg;
+    if(@this == 1){
+      msg.D0 = 0xC0;
+      msg.D1 = 0;
+      output(msg);
+    }   
+}

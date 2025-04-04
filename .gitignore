@@ -1,0 +1,8 @@
+# Ignore only subdirectories in rbms_app/Projects/MDK-ARM
+rbms_app/Projects/MDK-ARM/*/
+
+# Ignore build directory in rbms_raj240100/default
+rbms_raj240100/DefaultBuild/*
+
+# Ignore CANOE tool log in tool/canoe/old
+tool/canoe/old/*

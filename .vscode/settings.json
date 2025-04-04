@@ -1,0 +1,22 @@
+{
+    "files.associations": {
+        "master.h": "c",
+        "sys_err_chk.h": "c",
+        "rack_sys.h": "c",
+        "stdio.h": "c",
+        "submicprocessdata.h": "c",
+        "rs485_data_processor.h": "c",
+        "eeprom_control.h": "c",
+        "obshal.h": "c",
+        "herror.h": "c",
+        "main.h": "c",
+        "htypes.h": "c",
+        "glovar.h": "c",
+        "can_diagcom.h": "c",
+        "can_pctool.h": "c",
+        "cellbalancing.h": "c",
+        "bms.h": "c",
+        "bms_os.h": "c",
+        "hlog.h": "c"
+    }
+}
